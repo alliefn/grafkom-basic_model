@@ -86,22 +86,31 @@
                 quad(0, 1, 5, 4);
             }
 
-            function CreateShader(gl, type, source) {
-                const shader = gl.CreateShader(type);
-                gl.shaderSource(shader, source);
-                gl.compileShader(shader);
-                const success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+            function CreateProgram(gl) {
+                function CreateShader(gl, type, source) {
+                    const shader = gl.createShader(type);
+                    gl.shaderSource(shader, source);
+                    gl.compileShader(shader);
+                    const success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
 
-                if (success) {
-                    return shader;
+                    if (success) {
+                        return shader;
+                    }
+
+                    console.log(gl.getShaderInfoLog(shader));
+                    gl.deleteShader(shader);
                 }
-
-                console.log(gl.getShaderInfoLog(shader));
-                gl.deleteShader(shader);
-            }
-
-            function CreateProgram(gl, vertexShader, fragmentShader) {
-                const program = gl.CreateProgram();
+                vertexShader = CreateShader(
+                    gl,
+                    gl.VERTEX_SHADER,
+                    document.getElementById("vertex-shader-3d").innerText
+                );
+                fragmentShader = CreateShader (
+                        gl,
+                        gl.FRAGMENT_SHADER,
+                        document.getElementById("fragment-shader-3d").innerText
+                    )
+                const program = gl.createProgram();
                 gl.attachShader(program, vertexShader);
                 gl.attachShader(program, fragmentShader);
                 gl.linkProgram(program);
@@ -131,19 +140,7 @@
 
                 //  Load shaders and initialize attribute buffers
 
-                var program = CreateProgram(
-                    gl,
-                    CreateShader(
-                        gl,
-                        gl.VERTEX_SHADER,
-                        document.getElementById("vertex-shader-3d").innerText
-                    ),
-                    CreateShader(
-                        gl,
-                        gl.FRAGMENT_SHADER,
-                        document.getElementById("fragment-shader-3d").innerText
-                    )
-                );
+                var program = CreateProgram(gl);
 
                 gl.useProgram(program);
 
